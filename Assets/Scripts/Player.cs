@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
 
     public void followPath()
     {
-        if (Vector3.Distance(transform.position, new Vector3(path[nowIndex].x + 0.5f, path[nowIndex].y + 0.5f)) < 0.1f)
+        if (Vector3.Distance(transform.position, new Vector3(path[nowIndex].x + 0.5f, path[nowIndex].y + 0.5f)) < 0.001f)
         {
             nowIndex++;
             if (nowIndex == path.Count)

@@ -45,7 +45,7 @@ public class PathFinding : MonoBehaviour
         openList.Clear();
         closeList.Clear();
 
-        openList.Add(list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)]);
+        openList.Add(getClosestNode(player.transform.position));
         endNode = openList[0];
     }
 
@@ -55,7 +55,10 @@ public class PathFinding : MonoBehaviour
         List<Node> path = null;
         if (Input.GetMouseButtonDown(0))
         {
-            updateTarget();
+            if (!updateTarget())
+            {
+                return;
+            }
             path = FindPath();
             player.GetComponent<Player>().newPath(path);
             if (path != null)
@@ -74,7 +77,7 @@ public class PathFinding : MonoBehaviour
         {
             Vector3 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             vec.z = 0f;
-            Node node = list[(int)Mathf.Floor(vec.y - transform.position.y)][(int)Mathf.Floor(vec.x - transform.position.x)];
+            Node node = getClosestNode(vec);
             node.walkable = !node.walkable;
             if (node.walkable)
             {
@@ -88,9 +91,13 @@ public class PathFinding : MonoBehaviour
 
     }
 
-    public void updateTarget()
+    public Node getClosestNode(Vector3 pos)
     {
-        //openList.Add(list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)]);
+        return list[(int)Mathf.Floor(pos.y - transform.position.y)][(int)Mathf.Floor(pos.x - transform.position.x)];
+    }
+
+    public bool updateTarget()
+    {
         for(int i = 0; i < GridH; i++)
         {
             for(int j = 0; j < GridW; j++)
@@ -100,14 +107,25 @@ public class PathFinding : MonoBehaviour
         }
         Vector3 vec = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         vec.z = 0f;
+
+        if(vec.x < 0 || vec.x > GridW || vec.y < 0 || vec.y > GridH)
+        {
+            return false;
+        }
+
         endPos = vec;
         Debug.Log(endPos);
         getEndNode();
+        if(endNode == getClosestNode(player.transform.position))
+        {
+            return false;
+        }
+        return true;
     }
 
     public void getEndNode()
     {
-        endNode = list[(int)Mathf.Floor(endPos.y - transform.position.y)][(int)Mathf.Floor(endPos.x - transform.position.x)];
+        endNode = getClosestNode(endPos);
     }
 
     public float getHeuristicEstimate(Node node)
@@ -138,7 +156,7 @@ public class PathFinding : MonoBehaviour
         openList.Clear();
         closeList.Clear();
         openList.Add(endNode);
-        endNode = list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)];
+        endNode = getClosestNode(player.transform.position);
 
         while (openList.Count > 0)
         {
