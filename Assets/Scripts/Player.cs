@@ -13,9 +13,12 @@ public class Player : MonoBehaviour
     
     public void newPath(List<Node> list)
     {
-        path = list;
-        nowIndex = 0;
-        Finished = false;
+        if (list != null)
+        {
+            path = list;
+            nowIndex = 0;
+            Finished = false;
+        }
     }
 
     public void followPath()
