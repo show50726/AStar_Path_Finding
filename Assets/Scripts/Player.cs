@@ -16,14 +16,15 @@ public class Player : MonoBehaviour
         if (list != null)
         {
             path = list;
-            nowIndex = 0;
+            nowIndex = 1;
             Finished = false;
+            direction = new Vector3(path[nowIndex].x + 0.5f - transform.position.x, path[nowIndex].y + 0.5f - transform.position.y);
         }
     }
 
     public void followPath()
     {
-        if(Vector3.Distance(transform.position, new Vector3(path[nowIndex].x + 0.5f, path[nowIndex].y + 0.5f)) < 0.001f)
+        if (Vector3.Distance(transform.position, new Vector3(path[nowIndex].x + 0.5f, path[nowIndex].y + 0.5f)) < 0.1f)
         {
             nowIndex++;
             if (nowIndex == path.Count)
@@ -32,14 +33,12 @@ public class Player : MonoBehaviour
                 return;
             }
             direction = new Vector3(path[nowIndex].x + 0.5f - transform.position.x, path[nowIndex].y + 0.5f - transform.position.y);
-            return;
         }
 
         transform.position += direction * Time.fixedDeltaTime * speed;
-
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if(!Finished)
         {

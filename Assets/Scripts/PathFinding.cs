@@ -17,6 +17,9 @@ public class PathFinding : MonoBehaviour
     private List<Node> closeList;
     private Node endNode;
 
+    private const float diagonalCost = 1.4f; 
+    private const float straightCost = 1f; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -87,9 +90,7 @@ public class PathFinding : MonoBehaviour
 
     public void updateTarget()
     {
-        openList.Clear();
-        closeList.Clear();
-        openList.Add(list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)]);
+        //openList.Add(list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)]);
         for(int i = 0; i < GridH; i++)
         {
             for(int j = 0; j < GridW; j++)
@@ -113,7 +114,7 @@ public class PathFinding : MonoBehaviour
     {
         float x = node.x - endNode.x;
         float y = node.y - endNode.y;
-        return Mathf.Sqrt(x * x + y * y);
+        return x + y;
     }
 
     public List<Node> CalcPath()
@@ -127,13 +128,18 @@ public class PathFinding : MonoBehaviour
             path.Add(curNode);
             curNode = curNode.from;
         }
-        path.Reverse();
+        //path.Reverse();
 
         return path;
     }
 
     public List<Node> FindPath()
     {
+        openList.Clear();
+        closeList.Clear();
+        openList.Add(endNode);
+        endNode = list[(int)Mathf.Floor(player.transform.position.y - transform.position.y)][(int)Mathf.Floor(player.transform.position.x - transform.position.x)];
+
         while (openList.Count > 0)
         {
             Node node = openList[0];
@@ -172,7 +178,7 @@ public class PathFinding : MonoBehaviour
                         float y = node.y - list[newY][newX].y;
                         list[newY][newX].hCost = getHeuristicEstimate(list[newY][newX]);
 
-                        float tmpCost = node.gCost + Mathf.Sqrt(x * x + y * y);
+                        float tmpCost = node.gCost + ((i == j) ? diagonalCost : straightCost);
                         if(tmpCost < list[newY][newX].gCost || list[newY][newX].gCost == 0)
                         {
                             list[newY][newX].gCost = tmpCost;
